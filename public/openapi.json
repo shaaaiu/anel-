@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Buy Panel Otomatis API",
+    "version": "1.0.0",
+    "description": "Dokumentasi API untuk panel Anda. Endpoint utama: membuat order, cek status, batalkan order, dan health check."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Server lokal (sesuaikan base url di deployment)"
+    }
+  ],
+  "paths": {
+    "/api/order": {
+      "post": {
+        "summary": "Buat order baru",
+        "description": "Membuat pesanan panel dan menghasilkan instruksi pembayaran.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Username pemesan"
+                  },
+                  "paket": {
+                    "type": "string",
+                    "description": "Nama/ID paket yang dipilih"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "Domain kustom (opsional)"
+                  }
+                },
+                "required": [
+                  "username",
+                  "paket"
+                ]
+              },
+              "examples": {
+                "contoh": {
+                  "value": {
+                    "username": "budi",
+                    "paket": "basic-1gb",
+                    "domain": "budi.my.id"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "orderId": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "payment": {
+                      "type": "object",
+                      "description": "Info pembayaran (jika tersedia)",
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Input tidak valid"
+          },
+          "500": {
+            "description": "Kesalahan server"
+          }
+        }
+      }
+    },
+    "/api/order/{id}/status": {
+      "get": {
+        "summary": "Cek status order",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID order"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status terkini dari order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "misalnya: pending, paid, processing, done, canceled"
+                    },
+                    "detail": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order tidak ditemukan"
+          },
+          "500": {
+            "description": "Kesalahan server"
+          }
+        }
+      }
+    },
+    "/api/order/{id}": {
+      "delete": {
+        "summary": "Batalkan/Hapus order",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID order"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order dibatalkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order tidak ditemukan"
+          },
+          "500": {
+            "description": "Kesalahan server"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "name": "x-api-key",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "apiKey": []
+    }
+  ]
+}
