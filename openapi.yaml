@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: Panel Otomatis API
+  version: "1.0.0"
+  description: API untuk membuat panel otomatis (order, status, cancel).
+servers:
+  - url: /
+paths:
+  /api/order:
+    post:
+      summary: Buat order baru panel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, paket]
+              properties:
+                username: { type: string, example: "alfath01" }
+                paket: { type: string, example: "1gb" }
+                domain: { type: string, example: "example.com" }
+      responses:
+        '200':
+          description: QRIS dibuat
+  /api/order/{id}/status:
+    get:
+      summary: Lihat status order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Status order }
+  /api/order/{id}:
+    delete:
+      summary: Batalkan order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Order dibatalkan }
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200': { description: OK }
